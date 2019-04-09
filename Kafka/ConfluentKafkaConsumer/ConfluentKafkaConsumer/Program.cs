@@ -1,10 +1,10 @@
 ﻿using Confluent.Kafka;
-using Confluent.Kafka.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConfluentKafkaConsumer
@@ -15,61 +15,83 @@ namespace ConfluentKafkaConsumer
 
         static void Main(string[] args)
         {
-            //group.id 消费者分组id
-            //同一Topic的一条消息只能被同一个Consumer Group内的一个Consumer消费，但多个Consumer Group可同时消费这一消息。这是Kafka用来实现一个Topic消息的广播（发给所有的Consumer）和单播（发给某一个Consumer）的手段，一个Topic可以对应多个Consumer Group。如果需要实现广播，只要每个Consumer有一个独立的Group就可以了。要实现单播只要所有的Consumer在同一个Group里。用Consumer Group还可以将Consumer进行自由的分组而不需要多次发送消息到不同的Topic。
-
-            //bootstrap.servers：kafka集群消费地址
-
-            //auto.commit.interval.ms：consumer向zookeeper提交offset的频率，单位是毫秒
-
-            //auto.offset.reset：具体参数含义如下： 
-            //earliest
-            //当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
-            //latest
-            //当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
-            //none
-            //topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
-            //详细每个auto.offset.reset参数参考下面的blog： 
-            var conf = new Dictionary<string, object>
-                {
-                  { "group.id", getKafkaGroupID() },
-                  { "bootstrap.servers", getKafkaBroker() },
-                  { "auto.commit.interval.ms", 5000 },
-                  { "auto.offset.reset", "earliest" }
-                };
-
-            using (var consumer = new Consumer<Null, string>(conf, null, new StringDeserializer(Encoding.UTF8)))
+            var topic = getTopicName();
+            var consumerConfig = new ConsumerConfig
             {
-                consumer.OnMessage += (_, msg)
-                  => C(msg);
-
-                consumer.OnError += (_, error)
-                  => Console.WriteLine($"Error: {error}");
-
-                consumer.OnConsumeError += (_, msg)
-                  => Console.WriteLine($"Consume error ({msg.TopicPartitionOffset}): {msg.Error}");
-
-                consumer.Subscribe(getTopicName());
-
-                while (true)
+                //分组
+                GroupId = getKafkaGroupID(),
+                //BrokerServer
+                BootstrapServers = getKafkaBroker(),
+                //Session超时时间
+                SessionTimeoutMs = 6000,
+                //分区信息统计间隔
+                StatisticsIntervalMs = 10000,
+                //是否自动提交Offset； 手动提交Offset坑很多
+                EnableAutoCommit = true,
+                //offset读取方式；
+                AutoOffsetReset = AutoOffsetReset.Earliest
+            };
+            //用于取消进程的执行
+            CancellationTokenSource cts = new CancellationTokenSource();
+            //<key,value>: Ignore的话值为空
+            using (var consumer = new ConsumerBuilder<Ignore, string>(consumerConfig)
+                    // 设置Value的反序列话方式
+                    .SetValueDeserializer(Deserializers.Utf8)
+                    .SetErrorHandler((_, e) => { Console.WriteLine("ErrorHandler:" + e.Reason); })
+                    //统计分区状态执行事件
+                    .SetStatisticsHandler((_, json) =>
+                    {
+                        // Console.WriteLine($"Statistics: {json}");
+                    })
+                    //分配Consumer分区的时候执行
+                    //设置订阅的分区和Offset，默认为全部
+                    .SetPartitionsAssignedHandler((c, partitions) =>
+                    {
+                        Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                        // return partitions.Where(w => w.Partition == 0).Select(tp => new TopicPartitionOffset(tp, 0));
+                    })
+                    .SetPartitionsRevokedHandler((c, partitions) =>
+                    {
+                        Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
+                    })
+                    .Build())
+            {
+                //要订阅的Topic
+                consumer.Subscribe(topic);
+                try
                 {
-                    consumer.Poll(TimeSpan.FromMilliseconds(100));
+                    while (true)
+                    {
+                        try
+                        {
+                            //进行订阅
+                            var consumeResult = consumer.Consume(cts.Token);
+
+                            if (consumeResult.IsPartitionEOF)
+                            {
+                                Console.WriteLine(
+                                    $"Reached end of topic {consumeResult.Topic}, partition {consumeResult.Partition}, offset {consumeResult.Offset}.");
+                                continue;
+                            }
+
+                            Console.WriteLine($"Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Value}");
+                        }
+                        catch (ConsumeException e)
+                        {
+                            Console.WriteLine($"Consume error: {e.Error.Reason}");
+                        }
+                    }
+
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("Closing consumer.");
+                    consumer.Close();
                 }
             }
         }
 
 
-        private static void C(Message<Null, string> msg)
-        {
-            string message = string.Format("值是：【{0}】，topic名是：【{1}】, Partition是：【{2}】，Offset是:【{3}】",
-                    msg.Value, 
-                    msg.TopicPartitionOffset.Topic, 
-                    msg.TopicPartitionOffset.Partition, 
-                    msg.TopicPartitionOffset.Offset
-                );
-            Console.WriteLine(message);
-            Console.WriteLine(string.Format("共{0}条", ++Count));
-        }
 
 
         private static string getKafkaBroker()
