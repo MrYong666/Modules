@@ -136,3 +136,4 @@ F:\Person-Project\Modules\Kafka\ConfluentKafkaConsumer\ConfluentKafkaConsumer\ob
 F:\Person-Project\Modules\Kafka\ConfluentKafkaConsumer\ConfluentKafkaConsumer\obj\Debug\ConfluentKafkaConsumer.csproj.CopyComplete
 F:\Person-Project\Modules\Kafka\ConfluentKafkaConsumer\ConfluentKafkaConsumer\obj\Debug\ConfluentKafkaConsumer.exe
 F:\Person-Project\Modules\Kafka\ConfluentKafkaConsumer\ConfluentKafkaConsumer\obj\Debug\ConfluentKafkaConsumer.pdb
+F:\Person-Project\Modules\Kafka\ConfluentKafkaConsumer\ConfluentKafkaConsumer\obj\Debug\ConfluentKafkaConsumer.csprojAssemblyReference.cache

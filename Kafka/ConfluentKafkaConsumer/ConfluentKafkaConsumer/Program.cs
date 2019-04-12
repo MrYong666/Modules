@@ -15,8 +15,8 @@ namespace ConfluentKafkaConsumer
 
         static void Main(string[] args)
         {
-            var startIndex = 0;
-            var endIndex = 5;
+            var startIndex = 10;
+            var endIndex = 10;
             var actionFlag = true;
             var partition = 1;
             var topic = getTopicName();
@@ -70,13 +70,15 @@ namespace ConfluentKafkaConsumer
                 {
                     while (true)
                     {
-                        consumer.Assign(new List<TopicPartitionOffset>() { new TopicPartitionOffset(topic, partition, startIndex) });
+                        consumer.Assign(new List<TopicPartitionOffset>() { new TopicPartitionOffset(topic, 0, startIndex) });
+
                         while (actionFlag)
                         {
                             try
                             {
                                 //进行订阅
                                 var consumeResult = consumer.Consume(cts.Token);
+                                //   consumer.Commit();
                                 if (consumeResult != null)
                                 {
                                     Console.WriteLine($"0  Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Value}");
@@ -92,8 +94,8 @@ namespace ConfluentKafkaConsumer
                             }
                         }
                         Console.WriteLine("跳出循环");
-                        startIndex += 1;
-                        endIndex += 1;
+                        startIndex += 10;
+                        endIndex += 10;
                         actionFlag = true;
                     }
 

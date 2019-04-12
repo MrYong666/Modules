@@ -222,3 +222,4 @@ F:\Person-Project\Modules\Kafka\ConfluentKafkaProducer\ConfluentKafkaProducer\bi
 F:\Person-Project\Modules\Kafka\ConfluentKafkaProducer\ConfluentKafkaProducer\bin\Debug\System.Numerics.Vectors.dll
 F:\Person-Project\Modules\Kafka\ConfluentKafkaProducer\ConfluentKafkaProducer\bin\Debug\System.Numerics.Vectors.xml
 F:\Person-Project\Modules\Kafka\ConfluentKafkaProducer\ConfluentKafkaProducer\obj\Debug\ConfluentKafkaProducer.exe.config
+F:\Person-Project\Modules\Kafka\ConfluentKafkaProducer\ConfluentKafkaProducer\obj\Debug\ConfluentKafkaProducer.csprojAssemblyReference.cache
