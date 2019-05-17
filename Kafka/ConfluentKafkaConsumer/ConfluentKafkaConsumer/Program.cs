@@ -15,10 +15,6 @@ namespace ConfluentKafkaConsumer
 
         static void Main(string[] args)
         {
-            var startIndex = 10;
-            var endIndex = 10;
-            var actionFlag = true;
-            var partition = 1;
             var topic = getTopicName();
             var consumerConfig = new ConsumerConfig
             {
@@ -31,7 +27,7 @@ namespace ConfluentKafkaConsumer
                 //分区信息统计间隔
                 StatisticsIntervalMs = 10000,
                 //是否自动提交Offset； 手动提交Offset坑很多
-                EnableAutoCommit = false,
+                EnableAutoCommit = true,
                 //offset读取方式；
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
@@ -49,54 +45,47 @@ namespace ConfluentKafkaConsumer
                     })
                     //分配Consumer分区的时候执行
                     // 设置订阅的分区和Offset，默认为全部
-                    .SetPartitionsAssignedHandler((c, partitions) =>
-                    {
-                        Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
-                        // return partitions.Select(tp => new TopicPartitionOffset(tp, 5));
-                        // var t1 = partitions.Where(w => w.Partition == 0).Select(tp => new TopicPartitionOffset(tp, 0));
-                        // return t1;
-                    })
-                    //.SetPartitionsRevokedHandler((c, partitions) =>
+                    //.SetPartitionsAssignedHandler((c, partitions) =>
                     //{
-                    //    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
-                    //    //  return partitions.Select(tp => new TopicPartitionOffset(topic, 1, 0));
+                    //    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                    //    //   return partitions.Where(w => w.Partition == 0).Select(tp => new TopicPartitionOffset(tp, 5));
+                    //    var t1 = partitions.Where(w => w.Partition == 0).Select(tp => new TopicPartitionOffset(tp, 0));
+                    //    return t1;
                     //})
+                    .SetPartitionsRevokedHandler((c, partitions) =>
+                    {
+                        Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
+                    })
                     .Build())
             {
                 //要订阅的Topic
-                //  consumer.Subscribe(topic);
+                // consumer.Subscribe(topic);
+                consumer.Assign(new List<TopicPartitionOffset>() { new TopicPartitionOffset("Test_2020", 2, 10) });
 
                 try
                 {
                     while (true)
                     {
-                        consumer.Assign(new List<TopicPartitionOffset>() { new TopicPartitionOffset(topic, 0, startIndex) });
-
-                        while (actionFlag)
+                        try
                         {
-                            try
+                            //进行订阅
+                            var consumeResult = consumer.Consume(TimeSpan.FromSeconds(10));
+                            if (consumeResult != null)
                             {
-                                //进行订阅
-                                var consumeResult = consumer.Consume(cts.Token);
-                                //   consumer.Commit();
-                                if (consumeResult != null)
-                                {
-                                    Console.WriteLine($"0  Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Value}");
-                                    if (consumeResult.Offset >= endIndex)
-                                    {
-                                        actionFlag = false;
-                                    }
-                                }
+                                Console.WriteLine($" 2 Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Value}");
                             }
-                            catch (ConsumeException e)
-                            {
-                                Console.WriteLine($"Consume error: {e.Error.Reason}");
-                            }
+                            //if (consumeResult.IsPartitionEOF)
+                            //{
+                            //    Console.WriteLine(
+                            //        $"Reached end of topic {consumeResult.Topic}, partition {consumeResult.Partition}, offset {consumeResult.Offset}.");
+                            //    continue;
+                            //}
+
                         }
-                        Console.WriteLine("跳出循环");
-                        startIndex += 10;
-                        endIndex += 10;
-                        actionFlag = true;
+                        catch (ConsumeException e)
+                        {
+                            Console.WriteLine($"Consume error: {e.Error.Reason}");
+                        }
                     }
 
                 }
