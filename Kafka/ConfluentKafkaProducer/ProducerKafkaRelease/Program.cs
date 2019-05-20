@@ -9,15 +9,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConfluentKafkaProducer
+namespace ProducerKafkaRelease
 {
     class Program
     {
         public static void Main(string[] args)
         {
-            Input();
+            Run();
         }
-        private static void Input()
+        private static void Run()
         {
             var config = new Dictionary<string, object>
             {

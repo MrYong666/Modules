@@ -8,8 +8,8 @@
     <ProjectGuid>{2E6F44B4-310C-48BE-B674-E199D79E0524}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConfluentKafkaProducer</RootNamespace>
-    <AssemblyName>ConfluentKafkaProducer</AssemblyName>
+    <RootNamespace>ProducerKafkaRelease</RootNamespace>
+    <AssemblyName>ProducerKafkaRelease</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
