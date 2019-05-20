@@ -7,12 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ConfluentKafkaConsumer
+namespace ConsumerrKafkaRC
 {
-    public class Program
+    class Program
     {
-        public static int Count = 0;
-
         static void Main(string[] args)
         {
             var topic = getTopicName();
@@ -98,8 +96,6 @@ namespace ConfluentKafkaConsumer
         }
 
 
-
-
         private static string getKafkaBroker()
         {
             return ConfigurationManager.AppSettings["KafkaBroker"].ToString();
@@ -114,7 +110,6 @@ namespace ConfluentKafkaConsumer
         {
             return ConfigurationManager.AppSettings["KafkaGroupID"].ToString();
         }
-
 
     }
 }
