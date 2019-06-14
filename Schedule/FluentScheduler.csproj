@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{41827029-DB84-497E-9BF6-6CE0AE6F882B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ScheduleDemo</RootNamespace>
-    <AssemblyName>ScheduleDemo</AssemblyName>
+    <RootNamespace>FluentScheduler</RootNamespace>
+    <AssemblyName>FluentScheduler</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -104,15 +104,29 @@ namespace ProducerKafkaRC
                 // need to call producer.Flush before disposing the producer.
             }
         }
-        public static void DeletedTopic()
+        /// <summary>
+        /// 删除Topic
+        /// </summary>
+        /// <param name="dbType">类型：D1，M1，G1等等</param>
+        /// <param name="expireInterval">过期时间间隔</param>
+        public static void DeletedTopics(string KafkaBroker, IEnumerable<string> topics)
         {
-            using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = getKafkaBroker() }).Build())
+            using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = KafkaBroker }).Build())
             {
-                var allTopics = adminClient.GetMetadata(new TimeSpan(0, 0, 2));//获取所有Topic
-                var topicInfo = allTopics.Topics.Where(w => w.Topic.Equals("UrlPool_D1_Product_1_2_20190514183358")).FirstOrDefault();
-                Thread.Sleep(TimeSpan.FromSeconds(2)); // git the topic some time to be created.
-                adminClient.DeleteTopicsAsync(new List<string> { topicInfo.Topic }).Wait();
+                if (topics != null && topics.Count() > 0)
+                {
+                    adminClient.DeleteTopicsAsync(topics).Wait();
+                }
             }
+        }
+        public static Metadata GetMetaData(string kafkaBroker)
+        {
+            Metadata metadata = null;
+            using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = kafkaBroker }).Build())
+            {
+                metadata = adminClient.GetMetadata(new TimeSpan(0, 0, 5));//获取所有Topic
+            }
+            return metadata;
         }
         private static string getKafkaBroker()
         {
