@@ -31,9 +31,11 @@ namespace ConsumerKafkaRelease
 
             using (var consumer = new Consumer(consumerConfig))
             {
-                TopicPartitionOffset par1 = new TopicPartitionOffset(topic, 0, 0);
-                TopicPartitionOffset par2 = new TopicPartitionOffset(topic, 1, 0);
-                consumer.Assign(new List<TopicPartitionOffset>() { par1, par2 });
+                //  TopicPartitionOffset par1 = new TopicPartitionOffset(topic, 0, 0);
+                //  TopicPartitionOffset par2 = new TopicPartitionOffset(topic, 1, 0);
+                //consumer.Assign(new List<TopicPartitionOffset>() { par1 });
+
+                consumer.Subscribe(topic);
 
                 Message msg;
                 while (true)
@@ -47,14 +49,13 @@ namespace ConsumerKafkaRelease
         }
         private static void C(Message msg)
         {
-            string message = string.Format("值是：【{0}】，topic名是：【{1}】, Partition是：【{2}】，Offset是:【{3}】",
-                    System.Text.Encoding.Default.GetString(msg.Value),//msg.Value.ToString(),
+            var values = System.Text.Encoding.Default.GetString(msg.Value);
+            string message = string.Format("topic名是：【{0}】, Partition是：【{1}】，Offset是:【{2}】",
                     msg.TopicPartitionOffset.Topic,
                     msg.TopicPartitionOffset.Partition,
                     msg.TopicPartitionOffset.Offset
                 );
             Console.WriteLine(message);
-
             Count++;
             Console.WriteLine("共" + Count.ToString() + "条");
         }

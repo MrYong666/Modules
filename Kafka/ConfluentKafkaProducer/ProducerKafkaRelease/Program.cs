@@ -29,7 +29,6 @@ namespace ProducerKafkaRelease
             using (Producer<Null, string> producer = new Producer<Null, string>(config, null, new StringSerializer(Encoding.UTF8)))
             {
                 Console.WriteLine("{" + producer.Name + "} producing on {" + topicName + "}. q to exit.");
-
                 string text;
                 while ((text = Console.ReadLine()) != "q")
                 {

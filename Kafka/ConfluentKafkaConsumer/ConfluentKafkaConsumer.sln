@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerrKafkaRC", "Consume
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerKafkaRelease", "ConsumerKafkaRelease\ConsumerKafkaRelease.csproj", "{BFE008CD-9011-4747-B3FD-AAF278B23075}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaCommon", "..\ConfluentKafkaProducer\KafkaTool\KafkaCommon.csproj", "{EEEB1B10-BA39-4AC5-856F-ED77A357BEE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BFE008CD-9011-4747-B3FD-AAF278B23075}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFE008CD-9011-4747-B3FD-AAF278B23075}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFE008CD-9011-4747-B3FD-AAF278B23075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEEB1B10-BA39-4AC5-856F-ED77A357BEE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEEB1B10-BA39-4AC5-856F-ED77A357BEE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEEB1B10-BA39-4AC5-856F-ED77A357BEE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEEB1B10-BA39-4AC5-856F-ED77A357BEE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
